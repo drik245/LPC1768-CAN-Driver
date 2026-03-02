@@ -1,0 +1,71 @@
+﻿# ── Keil uVision User-Specific Files ──────────────────────
+*.opt
+*.uvopt
+*.uvoptx
+*.uvgui
+*.uvgui.*
+*.uvguix.*
+
+# ── Listing Files ─────────────────────────────────────────
+*.cod
+*.htm
+*.i
+*.lst
+*.map
+*.m51
+*.m66
+*.scr
+
+# ── Object & Binary Files ─────────────────────────────────
+*.axf
+*.hex
+*.d
+*.crf
+*.elf
+*.h86
+*.lib
+*.obj
+*.o
+*.sbr
+
+# ── Generated Output Folders ──────────────────────────────
+**/Listings/
+**/Objects/
+**/output/
+
+# ── RTE (Runtime Environment - auto generated) ────────────
+**/RTE/
+
+# ── Build Files ───────────────────────────────────────────
+*._ia
+*.__i
+*._ii
+
+# ── Debugger Files ────────────────────────────────────────
+*.ini
+*.dbgconf
+
+# ── Other Keil Files ──────────────────────────────────────
+*.build_log.htm
+*.cdb
+*.dep
+*.ic
+*.lin
+*.lnp
+*.orc
+*.pack
+*.pdsc
+*.plg
+*.sfd
+*.sfr
+*.scvd
+*.tra
+*.fed
+*.l1p
+*.l2p
+*.iex
+*.bak
+
+# ── Windows Junk ──────────────────────────────────────────
+Thumbs.db
+Desktop.ini
