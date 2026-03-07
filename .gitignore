@@ -5,6 +5,8 @@
 *.uvgui
 *.uvgui.*
 *.uvguix.*
+*.uvproj
+*.uvprojx
 
 # ── Listing Files ─────────────────────────────────────────
 *.cod
@@ -32,6 +34,7 @@
 **/Listings/
 **/Objects/
 **/output/
+**/Plan/
 
 # ── RTE (Runtime Environment - auto generated) ────────────
 **/RTE/
