@@ -35,6 +35,8 @@
 **/Objects/
 **/output/
 **/Plan/
+**/Reports/
+**/esp_test/
 
 # ── RTE (Runtime Environment - auto generated) ────────────
 **/RTE/

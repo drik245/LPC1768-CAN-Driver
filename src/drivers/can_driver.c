@@ -97,33 +97,46 @@ static LPC_CAN_TypeDef *can_periph(can_channel_t ch)
 /* ================================================================
  *  Baud-rate → BTR register value
  *
- *  PCLK = CCLK = 100 MHz (set by HAL).
- *  Target: 80 % sample point, SJW = 4 Tq.
+ *  PCLK = CCLK (set by HAL).  mbed LPC1768 = 96 MHz.
+ *  Auto-searches Nq (quanta per bit) from 25 down to 8,
+ *  picking the first Nq that gives an exact integer BRP
+ *  and keeps TSEG1 within the 4-bit hardware limit (≤ 16 Tq).
  *
- *  Nq (quanta/bit) = PCLK / (BRP+1) / baud
- *  We pick BRP so that Nq = 20:
- *    TSEG1 + 1 = 15  → 15 Tq  (prop + phase1)
- *    TSEG2 + 1 =  4  →  4 Tq  (phase2)
- *    SYNC      =  1  →  1 Tq
- *    Total     = 20 Tq   Sample point = 16/20 = 80 %
+ *  Target: ~80 % sample point, SJW = min(TSEG2, 4).
  * ================================================================ */
 
 static int can_calc_btr(can_baudrate_t baud, uint32_t *btr)
 {
-    uint32_t pclk = can_hal_get_pclk();
-    uint32_t brp;
+    uint32_t pclk    = can_hal_get_pclk();
+    uint32_t total_q = pclk / (uint32_t)baud;   /* total quanta per bit */
+    uint32_t nq, brp_val, tseg1, tseg2, sjw;
+    bool     found = false;
 
-    /* BRP+1 = PCLK / (baud * Nq)   with Nq = 20 */
-    uint32_t brp_val = pclk / ((uint32_t)baud * 20U);
-    if (brp_val == 0 || brp_val > 1024) return CAN_ERR_INVALID_PARAM;
+    for (nq = 25; nq >= 8; nq--) {
+        if (total_q % nq != 0) continue;         /* need exact division */
+        brp_val = total_q / nq;
+        if (brp_val < 1 || brp_val > 1024) continue;
 
-    brp = brp_val - 1U;
+        /* ~20 % of Nq for phase2 */
+        tseg2 = nq / 5;
+        if (tseg2 < 2) tseg2 = 2;
+        if (tseg2 > 8) tseg2 = 8;
+        tseg1 = nq - 1 - tseg2;                  /* SYNC = 1 Tq */
+        if (tseg1 < 1 || tseg1 > 16) continue;   /* TSEG1 4-bit limit */
 
-    /* SJW=3 (4 Tq), TSEG1=14 (15 Tq), TSEG2=3 (4 Tq), SAM=0 */
-    *btr = (brp & 0x3FFU)
-         | (3U  << 14)          /* SJW  */
-         | (14U << 16)          /* TSEG1 */
-         | (3U  << 20);         /* TSEG2 */
+        found = true;
+        break;
+    }
+
+    if (!found) return CAN_ERR_INVALID_PARAM;
+
+    sjw = (tseg2 < 4) ? tseg2 : 4;
+
+    /* Register values are (actual - 1) */
+    *btr = ((brp_val - 1) & 0x3FFU)
+         | ((sjw   - 1) << 14)
+         | ((tseg1 - 1) << 16)
+         | ((tseg2 - 1) << 20);
 
     return CAN_OK;
 }
