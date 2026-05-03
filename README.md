@@ -8,19 +8,14 @@ Real-Time CAN Communication Driver for LPC1768-Based Industrial Applications.
 - `tests/`      — On-target test suite (40+ self-test cases)
 - `docs/`       — Documentation (API reference, design docs)
 - `hardware/`   — Schematics and hardware notes
-- `esp_test/`   — ESP32 companion test sketches
-- `Reports/`    — Presentation materials
-- `Plan/`       — Weekly development plan (PDFs)
 
 ## Build Environment
 - IDE: Keil MDK-ARM uVision 5
 - Target: NXP LPC1768 (ARM Cortex-M3, 100MHz)
 - Device Pack: Keil LPC1700_DFP
 
-## Baud Rates Supported
-500kbps
-
 ## Features
+- Baudrate of 500kbps (Others may or may not work)
 - Dual CAN channel support (CAN1 & CAN2)
 - ISR-driven TX/RX with ring buffers
 - Hardware acceptance filter (individual + group entries)
