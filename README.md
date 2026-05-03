@@ -18,7 +18,7 @@ Real-Time CAN Communication Driver for LPC1768-Based Industrial Applications.
 - Device Pack: Keil LPC1700_DFP
 
 ## Baud Rates Supported
-125kbps | 250kbps | 500kbps | 1Mbps
+500kbps
 
 ## Features
 - Dual CAN channel support (CAN1 & CAN2)
@@ -31,5 +31,5 @@ Real-Time CAN Communication Driver for LPC1768-Based Industrial Applications.
 - Self-test loopback mode
 - Comprehensive test suite (40+ cases)
 
-## Status
-Week 4 — Testing, deployment, and production gateway complete.
+## Usage
+- To be Updated...
