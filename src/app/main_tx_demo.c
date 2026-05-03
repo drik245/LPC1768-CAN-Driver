@@ -1,12 +1,12 @@
 /**
- * @file main_rx_demo.c
- * @brief Demo: ESP32 TX → LPC1768 RX (using driver API)
+ * @file main_tx_demo.c
+ * @brief Demo: LPC1768 TX → ESP32 RX (using driver API)
  *
  * Copy to main.c and rebuild.
- * ESP32: Upload TX_Test.ino or ESP32_Demo_TX.ino
+ * ESP32: Upload RX_CAN.ino
  *
- * Receives CAN frames using the driver API.
- * Serial output shows received frames with hex data dump.
+ * Transmits CAN frames every ~500ms using the driver API.
+ * Serial output shows TX status.
  */
 
 #include "LPC17xx.h"
@@ -87,7 +87,7 @@ int main(void)
 
     uart_puts("\n\n");
     uart_puts("========================================\n");
-    uart_puts("   CAN RX Demo — LPC1768 Driver\n");
+    uart_puts("   CAN TX Demo — LPC1768 Driver\n");
     uart_puts("   Polling Mode, 500 kbps\n");
     uart_puts("========================================\n\n");
 
@@ -103,42 +103,52 @@ int main(void)
         uart_puts("[FAIL] CAN init failed!\n");
         while (1) { LPC_GPIO1->FIOPIN ^= ALL; delay_ms(100); }
     }
-    uart_puts("[OK] CAN1 initialized (accept all — bypass filter)\n");
-    uart_puts("Waiting for CAN frames...\n");
+    uart_puts("[OK] CAN1 initialized\n");
+    uart_puts("Transmitting ID=0x100 every 500ms...\n");
     uart_puts("----------------------------------------\n");
 
     LPC_GPIO1->FIOSET = LED1;
-    uint32_t rx_count = 0;
+    uint8_t counter = 0;
+    uint32_t tx_count = 0;
 
-    /* ═══ Main RX loop ════════════════════════════════════ */
+    /* ═══ Main TX loop ════════════════════════════════════ */
     while (1)
     {
-        can_message_t msg;
-        if (can_receive(CAN_CHANNEL_1, &msg, 0) == CAN_OK)
-        {
-            rx_count++;
-            LPC_GPIO1->FIOPIN ^= LED2;
-            LPC_GPIO1->FIOSET  = LED3;
+        uint16_t sensor = (uint16_t)(counter * 13 + 200);
+        can_message_t tx;
+        memset(&tx, 0, sizeof(tx));
+        tx.id         = 0x100;
+        tx.frame_type = CAN_FRAME_STANDARD;
+        tx.dlc        = 8;
+        tx.data[0]    = 0xAB;
+        tx.data[1]    = 0xCD;
+        tx.data[2]    = counter;
+        tx.data[3]    = 0x01;
+        tx.data[4]    = (uint8_t)(sensor >> 8);
+        tx.data[5]    = (uint8_t)(sensor & 0xFF);
+        tx.data[6]    = (uint8_t)(counter ^ tx.data[4]);
+        tx.data[7]    = 0xFF;
 
-            uart_puts("[RX #");
-            uart_putdec(rx_count);
-            uart_puts("] ID=0x");
-            uart_puthex(msg.id, 3);
-            uart_puts("  DLC=");
-            uart_putdec(msg.dlc);
-            uart_puts("  Data=[");
-            for (uint8_t i = 0; i < msg.dlc && i < 8; i++) {
-                if (i > 0) uart_putc(' ');
-                uart_puthex(msg.data[i], 2);
-            }
-            uart_puts("]\n");
-        }
+        int rc = can_transmit(CAN_CHANNEL_1, &tx);
+        tx_count++;
 
-        /* Heartbeat */
-        static uint32_t hb = 0;
-        if (++hb >= 500000UL) {
-            hb = 0;
-            LPC_GPIO1->FIOPIN ^= LED1;
+        uart_puts("[TX #");
+        uart_putdec(tx_count);
+        uart_puts("] ID=0x");
+        uart_puthex(tx.id, 3);
+        uart_puts("  DLC=");
+        uart_putdec(tx.dlc);
+        uart_puts("  [");
+        for (int i = 0; i < 8; i++) {
+            if (i) uart_putc(' ');
+            uart_puthex(tx.data[i], 2);
         }
+        uart_puts("]  ");
+        uart_puts(rc == CAN_OK ? "OK" : "FAILED");
+        uart_putc('\n');
+
+        LPC_GPIO1->FIOPIN ^= LED1;
+        counter++;
+        delay_ms(500);
     }
 }

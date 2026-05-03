@@ -10,7 +10,7 @@
 
 /**
  * @brief Enable power and set peripheral clock for CAN channel.
- *        Both CAN1 and CAN2 PCLK are set to CCLK (100 MHz).
+ *        Both CAN1 and CAN2 PCLK are set to CCLK/4 (25 MHz).
  */
 int can_hal_init_clock(can_channel_t channel);
 

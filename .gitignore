@@ -20,7 +20,6 @@
 
 # ── Object & Binary Files ─────────────────────────────────
 *.axf
-*.hex
 *.d
 *.crf
 *.elf
@@ -36,8 +35,8 @@
 **/output/
 **/Plan/
 **/Reports/
-
-# ── RTE (Runtime Environment - auto generated) ────────────
+**/DebugConfig/
+**/dashboard/
 **/RTE/
 
 # ── Build Files ───────────────────────────────────────────
