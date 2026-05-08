@@ -1,11 +1,6 @@
 /**
  * @file can_driver.c
  * @brief CAN Driver implementation for LPC1768
- *
- * Week 2 — Register-level init, transmit, receive, filtering,
- *          status, mode control, ISR, and callback dispatch.
- * Week 3 — Diagnostics, group filters, bus-off recovery,
- *          sleep/wake power management.
  */
 
 #include "LPC17xx.h"
@@ -15,20 +10,16 @@
 #include "can_reg.h"
 #include <string.h>
 
-/* ================================================================
- *  Internal Constants
- * ================================================================ */
+/*  Internal Constants */
 
 #define CAN_NUM_CHANNELS     2
 #define MAX_STD_FILTERS      16
 #define MAX_EXT_FILTERS      8
 #define MAX_STD_GRP_FILTERS  8
 #define MAX_EXT_GRP_FILTERS  4
-#define BUSOFF_RECOVERY_MS   500   /* auto-recovery delay */
+#define BUSOFF_RECOVERY_MS   500
 
-/* ================================================================
- *  Internal State
- * ================================================================ */
+/*  Internal State */
 
 /** Diagnostic counters (per channel) */
 typedef struct {
@@ -315,21 +306,11 @@ int can_init(const can_config_t *config)
     /* Clear status by reading ICR */
     (void)pCAN->ICR;
 
-    /* Polling-based driver — no interrupts.
-     *
-     * Design decision: ISR-driven CAN on the LPC1768 causes bus-off
-     * errors under load because error/status interrupts re-trigger
-     * continuously and starve the main loop.  The polling approach
-     * is proven stable for both TX and RX in all test scenarios.
-     *
-     * can_transmit() polls SR for a free HW TX buffer.
-     * can_receive() polls GSR for pending RX data.
-     * The ISR code remains in this file for reference / future use
-     * but is dormant since IER = 0. */
+    /* Polling-based driver — no interrupts. */
     pCAN->IER = 0;
 
     /* Default: Acceptance Filter in Bypass (accept all)
-     * AFMR = 0x02 → Bypass mode, matching working demo */
+     * AFMR = 0x02 - Bypass mode, matching working demo */
     if (!g_filters_active) {
         LPC_CANAF->AFMR = CAN_AFMR_ACCBP;
     }

@@ -116,16 +116,11 @@ typedef struct {
 int  can_get_diag   (can_channel_t ch, can_diag_t *diag);
 void can_reset_diag (can_channel_t ch);
 
-/* -- Advanced Filtering (Week 3) --------------------------- */
-
-/** Accept a range of IDs [id_low .. id_high] (group filter) */
 int can_set_group_filter(can_channel_t ch, uint32_t id_low,
                          uint32_t id_high, can_frame_type_t ft);
 
-/** Remove all acceptance filter entries and return to bypass */
 int can_clear_filters(can_channel_t ch);
 
-/* -- Power Management (Week 3) ----------------------------- */
 int can_sleep(can_channel_t channel);
 int can_wake (can_channel_t channel);
 

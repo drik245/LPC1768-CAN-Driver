@@ -12,9 +12,7 @@
 #include "can_buffer.h"
 #include <string.h>
 
-/* ================================================================
- *  Internal State
- * ================================================================ */
+/*  Internal State */
 
 static can_route_t        g_routes[CAN_GW_MAX_ROUTES];
 static uint8_t            g_num_routes;
@@ -34,9 +32,7 @@ static volatile uint8_t  g_pend_head;
 static volatile uint8_t  g_pend_tail;
 static volatile uint8_t  g_pend_count;
 
-/* ================================================================
- *  Internal helpers
- * ================================================================ */
+/*  Internal helpers */
 
 static void gw_pending_push(can_channel_t dst, const can_message_t *msg)
 {
@@ -76,9 +72,7 @@ static void gw_rx_callback(can_channel_t ch, can_message_t *msg)
     }
 }
 
-/* ================================================================
- *  Public API
- * ================================================================ */
+/*  Public API */
 
 int can_gateway_init(void)
 {

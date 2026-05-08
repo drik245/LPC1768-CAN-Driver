@@ -2,9 +2,6 @@
  * @file main_filter_demo.c
  * @brief Demo: CAN Acceptance Filter — LPC1768 RX with serial output
  *
- * Copy to main.c and rebuild.
- * ESP32: Upload ESP32_Demo_TX.ino
- *
  * Shows CAN hardware acceptance filtering via UART serial output.
  * Filter accepts ID=0x100 and ID=0x200. Other IDs are hardware-rejected.
  *
